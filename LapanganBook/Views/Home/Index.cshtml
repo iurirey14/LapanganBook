@@ -1,43 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Modul1_GudangOOP.Models;
-public class Barang
-{
-// 1. Field (Atribut/Data)
-public string KodeBarang;
-public string NamaBarang;
-public int JumlahStok;
-public string Kategori;
-
-// 2. Constructor Berparameter
-public Barang(string kode, string nama, int stok, string kategori)
-{
-KodeBarang = kode;
-NamaBarang = nama;
-JumlahStok = stok;
-Kategori = kategori;
-}
-
-// 3. Constructor Kosong (Overloading - Langkah 5)
-public Barang()
-{
-KodeBarang = "UNKNOW";
-NamaBarang = "Barang Baru";
-JumlahStok = 0;
-Kategori = "Umum";
-}
-
-// 4. Method Menampilkan Informasi
-public void TampilkanInfo()
-{
-Console.WriteLine($"[{KodeBarang}] {NamaBarang} - Stok: {JumlahStok}, Kategori: {Kategori}");
-}
-
-// 5. Method Cek Status Stok (Langkah 4)
-public string StatusStok()
-{
-return JumlahStok > 50 ? "Stok Aman" : "Perlu Reorder";
-}
-}
+@* ===== ORANG 4: Landing page ===== *@
+<section class="hero text-center py-5">
+    <span class="badge rounded-pill text-bg-dark border mb-3 px-3 py-2"><i class="bi bi-lightning-charge-fill text-warning"></i> Booking 24/7, tanpa telepon</span>
+    <h1>Booking Lapangan<br><span class="brand">Cepat, Mudah, Anti Bentrok</span></h1>
+    <p class="text-secondary mx-auto my-4" style="max-width:560px">Pilih lapangan futsal atau badminton favoritmu, tentukan jam main, dan langsung booking dalam hitungan detik.</p>
+    <a class="btn btn-grad btn-lg" asp-controller="Lapangan" asp-action="Index">Cari Lapangan <i class="bi bi-arrow-right"></i></a>
+</section>
+<div class="row g-4 mt-4">
+    @foreach (var f in new[] { ("bi-calendar2-check", "Cek Jadwal Otomatis", "Sistem menolak jam yang sudah dipesan orang lain."), ("bi-cash-coin", "Harga Transparan", "Total biaya dihitung langsung sebelum booking."), ("bi-shield-check", "Dikonfirmasi Admin", "Setiap booking diverifikasi dan dipantau admin.") })
+    {
+        <div class="col-md-4"><div class="glass p-4 h-100"><i class="bi @f.Item1 fs-1 brand"></i><h5 class="mt-3">@f.Item2</h5><p class="text-secondary mb-0">@f.Item3</p></div></div>
+    }
+</div>
+<h3 class="text-center fw-bold mt-5 mb-4">Kata Mereka</h3>
+<div class="row g-4">
+    @foreach (var t in new[] { ("Rizky", "Booking futsal jadi gampang, tidak perlu telepon lagi."), ("Dina", "Jadwalnya jelas dan tidak pernah bentrok."), ("Bagas", "Admin cepat mengonfirmasi booking.") })
+    {
+        <div class="col-md-4"><div class="glass p-4 h-100"><div class="text-warning mb-2">★★★★★</div><p>“@t.Item2”</p><small class="text-secondary">— @t.Item1</small></div></div>
+    }
+</div>
