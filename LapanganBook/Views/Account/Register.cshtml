@@ -1,0 +1,4 @@
+<div class="row justify-content-center"><div class="col-md-5"><div class="glass p-4 p-md-5"><h3 class="fw-bold mb-4">Buat Akun</h3>
+@if(ViewBag.Err!=null){<div class="alert alert-danger">@ViewBag.Err</div>}
+<form method="post"><input name="nama" class="form-control mb-3" placeholder="Nama lengkap" required><input name="email" type="email" class="form-control mb-3" placeholder="Email" required><input name="password" type="password" minlength="6" class="form-control mb-4" placeholder="Password (min 6)" required>
+<button class="btn btn-grad w-100">Daftar</button></form></div></div></div>
