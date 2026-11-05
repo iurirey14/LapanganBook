@@ -1,8 +1,46 @@
 @model List<Booking>
+@{
+    var harian = (List<(string Tgl, int N)>)ViewBag.Harian; var maks = Math.Max(1, harian.Max(x => x.N)); string st = (string?)ViewBag.Status ?? "";
+}
 <h2 class="fw-bold mb-4">Dashboard Admin</h2>
-<div class="row g-3 mb-4">@foreach(var s in new[]{("Total Booking",$"{ViewBag.Total}","bi-journal-check"),("Menunggu",$"{ViewBag.Menunggu}","bi-hourglass-split"),("Pelanggan",$"{ViewBag.User}","bi-people"),("Omzet","Rp "+((decimal)ViewBag.Omzet).ToString("N0"),"bi-cash-stack")}){
-<div class="col-6 col-lg-3"><div class="glass stat"><i class="bi @s.Item3 fs-3 brand"></i><div class="text-secondary small mt-2">@s.Item1</div><h3>@s.Item2</h3></div></div> }</div>
-<div class="glass p-3 table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Pemesan</th><th>Lapangan</th><th>Jadwal</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>
-@foreach(var b in Model){ <tr><td>@b.User!.Nama</td><td>@b.Lapangan!.Nama</td><td>@b.Tanggal.ToString("dd/MM/yy") @b.JamMulai.ToString("00"):00 (@b.Durasi j)</td><td>Rp @b.Total.ToString("N0")</td><td><span class="badge text-bg-secondary">@b.Status</span></td>
-<td class="text-end">@if(b.Status=="Menunggu"){<form asp-action="Status" method="post" class="d-inline"><input type="hidden" name="id" value="@b.Id"><button name="status" value="Disetujui" class="btn btn-sm btn-success">Setujui</button> <button name="status" value="Ditolak" class="btn btn-sm btn-outline-danger">Tolak</button></form>}</td></tr> }
-</tbody></table></div>
+<div class="row g-3 mb-4">
+    @foreach (var s in new[] { ("Total Booking", $"{ViewBag.Total}", "bi-journal-check"), ("Menunggu", $"{ViewBag.Menunggu}", "bi-hourglass-split"), ("Pelanggan", $"{ViewBag.User}", "bi-people"), ("Omzet", "Rp " + ((decimal)ViewBag.Omzet).ToString("N0"), "bi-cash-stack") })
+    {
+        <div class="col-6 col-lg-3"><div class="glass stat"><i class="bi @s.Item3 fs-3 brand"></i><div class="text-secondary small mt-2">@s.Item1</div><h3>@s.Item2</h3></div></div>
+    }
+</div>
+<div class="glass p-4 mb-4">
+    <h6 class="mb-3">Booking 7 hari terakhir</h6>
+    <div class="d-flex align-items-end gap-2" style="height:140px">
+        @foreach (var x in harian)
+        {
+            <div class="flex-fill text-center"><div class="small">@x.N</div><div style="height:@(x.N * 80 / maks)px;min-height:4px;background:linear-gradient(#06b6d4,#7c3aed);border-radius:8px"></div><div class="small text-secondary mt-1">@x.Tgl</div></div>
+        }
+    </div>
+</div>
+<div class="mb-3 d-flex gap-2 flex-wrap">
+    @foreach (var s in new[] { "", "Menunggu", "Disetujui", "Ditolak", "Dibatalkan" })
+    {
+        <a class="btn btn-sm btn-outline-light @(st == s ? "active" : "")" href="?status=@s">@(s == "" ? "Semua" : s)</a>
+    }
+</div>
+<div class="glass p-3 table-responsive">
+    <table class="table align-middle mb-0">
+        <thead><tr><th>Pemesan</th><th>Lapangan</th><th>Jadwal</th><th>Total</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var b in Model)
+            {
+                <tr>
+                    <td>@b.User!.Nama</td>
+                    <td>@b.Lapangan!.Nama</td>
+                    <td>@b.Tanggal.ToString("dd/MM/yy") @b.JamMulai.ToString("00"):00 (@b.Durasi j)</td>
+                    <td>Rp @b.Total.ToString("N0")</td>
+                    <td><span class="badge text-bg-secondary">@b.Status</span></td>
+                    <td class="text-end">@if(b.Status=="Menunggu"){
+                        <form asp-action="Status" method="post" class="d-inline"><input type="hidden" name="id" value="@b.Id"><button name="status" value="Disetujui" class="btn btn-sm btn-success">Setujui</button> <button name="status" value="Ditolak" class="btn btn-sm btn-outline-danger">Tolak</button></form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>    </table>
+</div>
