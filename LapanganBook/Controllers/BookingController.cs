@@ -1,8 +1,16 @@
-// ===== ORANG 3: Booking + cek jadwal bentrok =====
+// ===== ORANG 3: Booking + cek bentrok + jam terisi =====
 using System.Security.Claims; using Microsoft.AspNetCore.Authorization; using Microsoft.EntityFrameworkCore;
 [Authorize] public class BookingController(AppDbContext db) : Controller {
   int Uid => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
   public IActionResult Create(int id){ var l=db.Lapangans.Find(id); return l==null ? NotFound() : View(l); }
+
+  [HttpGet] public IActionResult JamTerisi(int id, DateTime tanggal){
+    var t = tanggal.Date;
+    var jam = db.Bookings
+      .Where(b => b.LapanganId == id && b.Tanggal == t && b.Status != "Dibatalkan" && b.Status != "Ditolak")
+      .AsEnumerable().SelectMany(b => Enumerable.Range(b.JamMulai, b.Durasi)).ToList();
+    return Json(jam); }
+
   [HttpPost] public IActionResult Create(int id, DateTime tanggal, int jam, int durasi){
     var l = db.Lapangans.Find(id); if(l==null) return NotFound(); string? err=null; var t=tanggal.Date;
     if(t < DateTime.Today) err="Tanggal tidak boleh sudah lewat.";
@@ -11,6 +19,7 @@ using System.Security.Claims; using Microsoft.AspNetCore.Authorization; using Mi
     if(err!=null){ ViewBag.Err=err; return View(l); }
     db.Bookings.Add(new Booking{UserId=Uid,LapanganId=id,Tanggal=t,JamMulai=jam,Durasi=durasi,Total=l.Harga*durasi}); db.SaveChanges();
     return RedirectToAction("Saya"); }
+
   public IActionResult Saya() => View(db.Bookings.Include(b=>b.Lapangan).Where(b=>b.UserId==Uid).OrderByDescending(b=>b.Id).ToList());
   [HttpPost] public IActionResult Batal(int id){ var b=db.Bookings.FirstOrDefault(x=>x.Id==id&&x.UserId==Uid); if(b!=null&&b.Status=="Menunggu"){ b.Status="Dibatalkan"; db.SaveChanges(); } return RedirectToAction("Saya"); }
 }

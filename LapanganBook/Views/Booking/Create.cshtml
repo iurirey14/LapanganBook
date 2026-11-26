@@ -4,11 +4,28 @@
 <h3 class="fw-bold">@Model.Nama</h3><p class="text-secondary">Rp @Model.Harga.ToString("N0") / jam</p>
 @if(ViewBag.Err!=null){<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> @ViewBag.Err</div>}
 <form method="post">
-<label class="small text-secondary">Tanggal</label><input type="date" name="tanggal" class="form-control mb-3" min="@DateTime.Today.ToString("yyyy-MM-dd")" value="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+<label class="small text-secondary">Tanggal</label><input type="date" name="tanggal" class="form-control mb-2" min="@DateTime.Today.ToString("yyyy-MM-dd")" value="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+<div id="info" class="small text-secondary mb-3"></div>
 <div class="row"><div class="col"><label class="small text-secondary">Jam mulai</label><select name="jam" class="form-select mb-3">@for(int i=8;i<=21;i++){<option value="@i">@i.ToString("00"):00</option>}</select></div>
 <div class="col"><label class="small text-secondary">Durasi</label><select id="durasi" name="durasi" class="form-select mb-3">@for(int i=1;i<=4;i++){<option value="@i">@i jam</option>}</select></div></div>
 <div class="d-flex justify-content-between align-items-center p-3 rounded-4 mb-3" style="background:#ffffff0d"><span class="text-secondary">Total bayar</span><h4 class="brand mb-0" id="total"></h4></div>
 <button class="btn btn-grad w-100 btn-lg">Konfirmasi Booking</button></form></div></div></div>
 @section Scripts{<script>
-const h=@((int)Model.Harga),d=document.getElementById('durasi'),t=document.getElementById('total');
-const u=()=>t.textContent='Rp '+(h*d.value).toLocaleString('id-ID');d.onchange=u;u();</script>}
+const h=@((int)Model.Harga);
+const d=document.getElementById('durasi'), t=document.getElementById('total'), info=document.getElementById('info');
+const tgl=document.querySelector('[name=tanggal]'), jam=document.querySelector('[name=jam]');
+const pad=n=>String(n).padStart(2,'0')+':00';
+const u=()=>t.textContent='Rp '+(h*d.value).toLocaleString('id-ID');
+async function muat(){
+  try{
+    const r=await fetch(/Booking/JamTerisi?id=@Model.Id&tanggal=${tgl.value});
+    const x=await r.json();
+    [...jam.options].forEach(o=>{ o.disabled=x.includes(+o.value); o.text=pad(o.value)+(o.disabled?' (terisi)':''); });
+    info.textContent = x.length ? 'Jam terisi: '+x.map(pad).join(', ') : 'Semua jam masih kosong';
+    const first=[...jam.options].find(o=>!o.disabled); if(first) jam.value=first.value;
+  }catch(e){ info.textContent=''; }
+}
+tgl.onchange=muat; d.onchange=u;
+document.querySelector('form').onsubmit=()=>confirm(Konfirmasi booking?\n\nTanggal: ${tgl.value}\nJam: ${pad(jam.value)} - ${pad(+jam.value + +d.value)}\nTotal: ${t.textContent});
+u(); muat();
+</script>}
