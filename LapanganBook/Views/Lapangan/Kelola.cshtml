@@ -25,13 +25,13 @@
                     <td>Rp @lapangan.Harga.ToString("N0")</td>
                     <td class="text-end">
                         <a class="btn btn-sm btn-outline-info"
-                           asp-action="Form"
-                           asp-route-id="@lapangan.Id">Edit</a>
+                            asp-action="Form"
+                            asp-route-id="@lapangan.Id">Edit</a>
                         <form asp-action="Hapus"
-                              asp-route-id="@lapangan.Id"
-                              method="post"
-                              class="d-inline"
-                              onsubmit="return confirm('Hapus lapangan ini?')">
+                                asp-route-id="@lapangan.Id"
+                                method="post"
+                                class="d-inline"
+                                onsubmit="return confirm('Hapus lapangan ini?')">
                             <button class="btn btn-sm btn-outline-danger">Hapus</button>
                         </form>
                     </td>
